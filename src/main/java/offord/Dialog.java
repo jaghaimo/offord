@@ -12,7 +12,6 @@ import com.fs.starfarer.api.combat.EngagementResultAPI;
 import com.fs.starfarer.api.util.Misc;
 
 import offord.dialog.DialogHandler;
-import offord.dialog.DismissHandler;
 import offord.dialog.OfficerHandler;
 
 public class Dialog implements InteractionDialogPlugin {
@@ -58,13 +57,15 @@ public class Dialog implements InteractionDialogPlugin {
         if (optionData instanceof DialogHandler) {
             DialogHandler handler = (DialogHandler) optionData;
             dialogHandler(handler);
+            return;
         }
+        dialog.dismiss();
     }
 
     private void dialogHandler(DialogHandler handler) {
         OptionPanelAPI options = dialog.getOptionPanel();
         options.clearOptions();
         handler.handle(dialog);
-        options.addOption("Cut the comm link", new DismissHandler());
+        options.addOption("Cut the comm link", null);
     }
 }
