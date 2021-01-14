@@ -16,6 +16,12 @@ import offord.dialog.OfficerHandler;
 
 public class Dialog implements InteractionDialogPlugin {
 
+    // TODO: finish converting to multi-page view
+    private final String PREV_PAGE = "Previous Page";
+    private final String NEXT_PAGE = "Next Page";
+    private int currentPage = 0;
+    private int maxPerPage = 5;
+
     private InteractionDialogAPI dialog;
     private List<OfficerDataAPI> officers;
 
@@ -34,7 +40,7 @@ public class Dialog implements InteractionDialogPlugin {
     }
 
     @Override
-    public void backFromEngagement(EngagementResultAPI arg0) {
+    public void backFromEngagement(EngagementResultAPI result) {
     }
 
     @Override
@@ -48,18 +54,20 @@ public class Dialog implements InteractionDialogPlugin {
     }
 
     @Override
-    public void optionMousedOver(String arg0, Object arg1) {
+    public void optionMousedOver(String optionText, Object optionData) {
     }
 
     @Override
     public void optionSelected(String optionText, Object optionData) {
-        dialog.getTextPanel().addPara(optionText, Misc.getButtonTextColor());
-        if (optionData instanceof DialogHandler) {
-            DialogHandler handler = (DialogHandler) optionData;
-            dialogHandler(handler);
+        if (optionData == null) {
+            dialog.dismiss();
             return;
         }
-        dialog.dismiss();
+        if (optionData instanceof DialogHandler) {
+            dialog.getTextPanel().addPara(optionText, Misc.getButtonTextColor());
+            DialogHandler handler = (DialogHandler) optionData;
+            dialogHandler(handler);
+        }
     }
 
     private void dialogHandler(DialogHandler handler) {
