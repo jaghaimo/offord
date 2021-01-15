@@ -33,13 +33,13 @@ public class PersonalityHandler implements DialogHandler {
     }
 
     private void addText(Dialog dialog) {
-        String name = "all your officers";
+        String name = "broadcast to all your officers";
         String who = "they";
         if (person != null) {
-            name = person.getNameString();
+            name = "call " + person.getNameString();
             who = person.getGender() == Gender.FEMALE ? "she" : "he";
         }
-        dialog.addText("You decide to call " + name + ".");
+        dialog.addText("You " + name + ".");
         dialog.addText("How should " + who + " behave in combat?");
     }
 
