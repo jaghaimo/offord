@@ -1,8 +1,8 @@
 package offord.dialog;
 
-import com.fs.starfarer.api.campaign.InteractionDialogAPI;
+import offord.Dialog;
 
 public interface DialogHandler {
 
-    public void handle(InteractionDialogAPI dialog);
+    public void handle(Dialog dialog);
 }

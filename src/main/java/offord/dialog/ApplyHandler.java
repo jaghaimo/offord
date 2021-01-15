@@ -2,8 +2,9 @@ package offord.dialog;
 
 import java.util.List;
 
-import com.fs.starfarer.api.campaign.InteractionDialogAPI;
 import com.fs.starfarer.api.characters.OfficerDataAPI;
+
+import offord.Dialog;
 
 public class ApplyHandler implements DialogHandler {
 
@@ -16,8 +17,8 @@ public class ApplyHandler implements DialogHandler {
     }
 
     @Override
-    public void handle(InteractionDialogAPI dialog) {
-        dialog.getTextPanel().addPara("You swiftly pass the intructions and terminate the call.");
+    public void handle(Dialog dialog) {
+        dialog.addText("You swiftly pass the intructions and terminate the call.");
         for (OfficerDataAPI officer : officers) {
             officer.getPerson().setPersonality(personality);
         }

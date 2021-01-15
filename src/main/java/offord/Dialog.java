@@ -1,5 +1,6 @@
 package offord;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -16,11 +17,13 @@ import offord.dialog.OfficerHandler;
 
 public class Dialog implements InteractionDialogPlugin {
 
-    // TODO: finish converting to multi-page view
     private final String PREV_PAGE = "Previous Page";
     private final String NEXT_PAGE = "Next Page";
+    private final String CUT_THE_COMM = "Cut the comm link";
     private int currentPage = 0;
-    private int maxPerPage = 5;
+    private int optionsPerPage = 5;
+
+    List<DialogOption> options = new ArrayList<>();
 
     private InteractionDialogAPI dialog;
     private List<OfficerDataAPI> officers;
@@ -32,7 +35,7 @@ public class Dialog implements InteractionDialogPlugin {
     @Override
     public void init(InteractionDialogAPI dialog) {
         this.dialog = dialog;
-        dialogHandler(new OfficerHandler(officers));
+        optionSelected(null, new OfficerHandler(officers));
     }
 
     @Override
@@ -59,21 +62,78 @@ public class Dialog implements InteractionDialogPlugin {
 
     @Override
     public void optionSelected(String optionText, Object optionData) {
-        if (optionData == null) {
+        if (optionData == CUT_THE_COMM) {
             dialog.dismiss();
             return;
         }
         if (optionData instanceof DialogHandler) {
-            dialog.getTextPanel().addPara(optionText, Misc.getButtonTextColor());
+            if (optionText != null) {
+                dialog.getTextPanel().addPara(optionText, Misc.getButtonTextColor());
+            }
+            options.clear();
             DialogHandler handler = (DialogHandler) optionData;
-            dialogHandler(handler);
+            handler.handle(this);
+        }
+        changePage(optionData);
+        showOptions();
+    }
+
+    public void addOption(String text, DialogHandler handler) {
+        options.add(new DialogOption(text, handler));
+    }
+
+    public void addText(String text) {
+        dialog.getTextPanel().addPara(text);
+    }
+
+    private void showOptions() {
+        int maxPages = (int) Math.ceil((float) options.size() / (float) optionsPerPage);
+        OptionPanelAPI optionPanel = dialog.getOptionPanel();
+        optionPanel.clearOptions();
+        clampCurrentPage(maxPages);
+        addOptions(currentPage * optionsPerPage);
+        addPagination(maxPages);
+        optionPanel.addOption(CUT_THE_COMM, CUT_THE_COMM);
+    }
+
+    private void addOptions(int start) {
+        int end = Math.min(start + optionsPerPage, options.size());
+        OptionPanelAPI optionPanel = dialog.getOptionPanel();
+        for (int i = start; i < end; i++) {
+            DialogOption option = options.get(i);
+            optionPanel.addOption(option.getText(), option.getHandler());
         }
     }
 
-    private void dialogHandler(DialogHandler handler) {
-        OptionPanelAPI options = dialog.getOptionPanel();
-        options.clearOptions();
-        handler.handle(dialog);
-        options.addOption("Cut the comm link", null);
+    private void addPagination(int maxPages) {
+        if (maxPages > 1) {
+            OptionPanelAPI optionPanel = dialog.getOptionPanel();
+            optionPanel.addOption(PREV_PAGE, PREV_PAGE);
+            optionPanel.addOption(NEXT_PAGE, NEXT_PAGE);
+            if (currentPage <= 0) {
+                optionPanel.setEnabled(PREV_PAGE, false);
+            }
+            if (currentPage >= maxPages - 1) {
+                optionPanel.setEnabled(NEXT_PAGE, false);
+            }
+        }
+    }
+
+    private void changePage(Object optionData) {
+        if (optionData == PREV_PAGE) {
+            currentPage--;
+        }
+        if (optionData == NEXT_PAGE) {
+            currentPage++;
+        }
+    }
+
+    private void clampCurrentPage(int maxPages) {
+        if (currentPage > maxPages - 1) {
+            currentPage = maxPages - 1;
+        }
+        if (currentPage < 0) {
+            currentPage = 0;
+        }
     }
 }

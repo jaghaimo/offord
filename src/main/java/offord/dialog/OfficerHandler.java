@@ -2,10 +2,9 @@ package offord.dialog;
 
 import java.util.List;
 
-import com.fs.starfarer.api.campaign.InteractionDialogAPI;
-import com.fs.starfarer.api.campaign.OptionPanelAPI;
-import com.fs.starfarer.api.campaign.TextPanelAPI;
 import com.fs.starfarer.api.characters.OfficerDataAPI;
+
+import offord.Dialog;
 
 public class OfficerHandler implements DialogHandler {
 
@@ -16,21 +15,21 @@ public class OfficerHandler implements DialogHandler {
     }
 
     @Override
-    public void handle(InteractionDialogAPI dialog) {
-        addText(dialog.getTextPanel());
-        addOptions(dialog.getOptionPanel());
+    public void handle(Dialog dialog) {
+        addText(dialog);
+        addOptions(dialog);
     }
 
-    private void addText(TextPanelAPI text) {
-        text.addPara("You decide to call your officers and instruct them how to behave in combat.");
-        text.addPara("Who would you like to call?");
+    private void addText(Dialog dialog) {
+        dialog.addText("You decide to call your officers and instruct them how to behave in combat.");
+        dialog.addText("Who would you like to call?");
     }
 
-    private void addOptions(OptionPanelAPI options) {
-        options.addOption("Call all officers", new PersonalityHandler(officers));
+    private void addOptions(Dialog dialog) {
+        dialog.addOption("Call all officers", new PersonalityHandler(officers));
         for (OfficerDataAPI officer : officers) {
             String person = officer.getPerson().getNameString();
-            options.addOption(person, new PersonalityHandler(officer));
+            dialog.addOption(person, new PersonalityHandler(officer));
         }
     }
 }
