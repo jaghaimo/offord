@@ -20,11 +20,11 @@ public class Dialog implements InteractionDialogPlugin {
     private final String PREV_PAGE = "Previous Page";
     private final String NEXT_PAGE = "Next Page";
     private final String CUT_THE_COMM = "Cut the comm link";
+
     private int currentPage = 0;
     private int optionsPerPage = 5;
 
-    List<DialogOption> options = new ArrayList<>();
-
+    private List<DialogOption> options = new ArrayList<>();
     private InteractionDialogAPI dialog;
     private List<OfficerDataAPI> officers;
 
@@ -67,9 +67,7 @@ public class Dialog implements InteractionDialogPlugin {
             return;
         }
         if (optionData instanceof DialogHandler) {
-            if (optionText != null) {
-                dialog.getTextPanel().addPara(optionText, Misc.getButtonTextColor());
-            }
+            addHeader(optionText);
             options.clear();
             DialogHandler handler = (DialogHandler) optionData;
             handler.handle(this);
@@ -86,14 +84,10 @@ public class Dialog implements InteractionDialogPlugin {
         dialog.getTextPanel().addPara(text);
     }
 
-    private void showOptions() {
-        int maxPages = (int) Math.ceil((float) options.size() / (float) optionsPerPage);
-        OptionPanelAPI optionPanel = dialog.getOptionPanel();
-        optionPanel.clearOptions();
-        clampCurrentPage(maxPages);
-        addOptions(currentPage * optionsPerPage);
-        addPagination(maxPages);
-        optionPanel.addOption(CUT_THE_COMM, CUT_THE_COMM);
+    private void addHeader(String text) {
+        if (text != null) {
+            dialog.getTextPanel().addPara(text, Misc.getButtonTextColor());
+        }
     }
 
     private void addOptions(int start) {
@@ -135,5 +129,15 @@ public class Dialog implements InteractionDialogPlugin {
         if (currentPage < 0) {
             currentPage = 0;
         }
+    }
+
+    private void showOptions() {
+        int maxPages = (int) Math.ceil((float) options.size() / (float) optionsPerPage);
+        OptionPanelAPI optionPanel = dialog.getOptionPanel();
+        optionPanel.clearOptions();
+        clampCurrentPage(maxPages);
+        addOptions(currentPage * optionsPerPage);
+        addPagination(maxPages);
+        optionPanel.addOption(CUT_THE_COMM, CUT_THE_COMM);
     }
 }
